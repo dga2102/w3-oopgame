@@ -1,201 +1,142 @@
-// ---------- Classes ----------
-
-// Represents an item
-class Item {
-  constructor(name, description) {
-    this.name = name;
-    this.description = description;
-  }
-}
-
-// Represents a single room/location
-class Room {
-  constructor(name, description) {
-    this.name = name;
-    this.description = description;
-    this.connections = {}; // e.g. { north: roomObject }
-    this.items = [];
-  }
-
-  connect(direction, room) {
-    this.connections[direction] = room;
-  }
-
-  describe() {
-    let text = `${this.description}\n`;
-    if (this.items.length > 0) {
-      text += `You see: ${this.items.map(i => i.name).join(", ")}.\n`;
-    }
-    text += `Exits: ${Object.keys(this.connections).join(", ")}.`;
-    return text;
-  }
-}
-
-// Represents the player
-class Player {
-  constructor() {
-    this.inventory = [];
-  }
-
-  addItem(item) {
-    this.inventory.push(item);
-  }
-
-  hasItem(name) {
-    return this.inventory.some(i => i.name === name);
-  }
-
-  listInventory() {
-    if (this.inventory.length === 0) return "You have nothing.";
-    return "You have: " + this.inventory.map(i => i.name).join(", ");
-  }
-}
-
-// Controls game flow
 class Game {
-  constructor() {
-    this.rooms = {};
-    this.currentRoom = null;
-    this.player = new Player();
-    this.isGameOver = false;
-  }
-
-  start() {
-    //Create Rooms
-    const crashSite = new Room("Crash Site", "Your ship lies wrecked here. Smoke rises from the wreckage.");
-    const forest = new Room("Forest", "Tall trees surround you. You hear strange noises.");
-    const cave = new Room("Cave", "It's dark and cold inside the cave.");
-    const river = new Room("River", "A wide river glows under the moonlight. You can see human lights in the distance.");
-    const lab = new Room("Laboratory", "A hidden human research facility. You hear footsteps approaching...");
-
-    //Connect Rooms
-    crashSite.connect("north", forest);
-    crashSite.connect("east", river);
-    forest.connect("south", crashSite);
-    forest.connect("east", cave);
-    cave.connect("west", forest);
-    river.connect("west", crashSite);
-    river.connect("north", lab);
-    lab.connect("south", river);
-
-    //Add Items
-    const enginePart = new Item("Engine Part", "A glowing fragment of alien machinery.");
-    const controlChip = new Item("Control Chip", "The ship’s central processor.");
-    const fuelCell = new Item("Fuel Cell", "A canister of glowing blue energy.");
-
-    forest.items.push(enginePart);
-    cave.items.push(controlChip);
-    river.items.push(fuelCell);
-
-    // Store Rooms
-    this.rooms = { crashSite, forest, cave, river, lab };
-
-    //Start Game 
-    this.currentRoom = crashSite;
-    this.updateUI();
-  }
-
-  // Move player to a new room
-  move(direction) {
-    const nextRoom = this.currentRoom.connections[direction];
-    if (!nextRoom) {
-      this.showMessage("You can’t go that way!");
-      return;
+    constructor() {
+        this.rooms = {};
+        this.player = new Player();
+        this.currentRoom = null;
+        this.isGameOver = false;
     }
 
-    // Lose condition, entering lab without all parts
-    if (nextRoom.name === "Laboratory" && !this.hasAllParts()) {
-      this.lose("Humans capture you before you can fix your ship!");
-      return;
+    start() {
+        const crashSite = new Room("Crash Site", "Your spaceship is broken. Pieces are scattered across Earth.");
+        const forest = new Room("Forest", "Tall trees block the sky. Something shiny is on the ground.");
+        const cave = new Room("Cave", "It’s dark and cold. A glowing object is half buried.");
+        const lab = new Room("Secret Lab", "Humans are studying strange technology here. Danger!");
+
+        crashSite.connect("north", forest);
+        forest.connect("south", crashSite);
+        forest.connect("east", cave);
+        cave.connect("west", forest);
+        cave.connect("south", lab);
+        lab.connect("north", cave);
+
+        const enginePart = new Item("Engine Part", "A damaged engine piece from your ship.");
+        const fuelCell = new Item("Fuel Cell", "Glowing blue energy source.");
+        const controlChip = new Item("Control Chip", "Main computer chip for navigation.");
+
+        forest.items.push(enginePart);
+        cave.items.push(fuelCell);
+        lab.items.push(controlChip);
+
+        this.rooms = { crashSite, forest, cave, lab };
+
+        this.currentRoom = crashSite;
+        this.player.location = crashSite;
+
+        this.update();
     }
 
-    this.currentRoom = nextRoom;
-    this.checkWinCondition();
-    this.updateUI();
-  }
+    move(direction) {
+        const nextRoom = this.currentRoom.connections[direction];
+        if (!nextRoom) {
+            this.showMessage("You can't go that way.");
+            return;
+        }
 
-  // Pick up an item in the current room
-  pickUp(item) {
-    this.player.addItem(item);
-    this.currentRoom.items = this.currentRoom.items.filter(i => i !== item);
-    this.showMessage(`You picked up the ${item.name}.`);
-  }
+        this.currentRoom = nextRoom;
+        this.player.location = nextRoom;
 
-  // Checks if player has all spaceship parts
-  hasAllParts() {
-    return (
-      this.player.hasItem("Engine Part") &&
-      this.player.hasItem("Control Chip") &&
-      this.player.hasItem("Fuel Cell")
-    );
-  }
-
-  // Checks if player has won
-  checkWinCondition() {
-    if (this.currentRoom.name === "Crash Site" && this.hasAllParts()) {
-      this.win("You repair your ship and escape Earth! Congratulations!");
-    }
-  }
-
-  // Display message for events
-  showMessage(msg) {
-    const desc = document.getElementById("description");
-    const actions = document.getElementById("actions");
-    desc.textContent = msg;
-    actions.innerHTML = `<button onclick="game.updateUI()">Continue</button>`;
-  }
-
-  // Game over
-  lose(message) {
-    this.isGameOver = true;
-    const desc = document.getElementById("description");
-    const actions = document.getElementById("actions");
-    desc.textContent = "💀 " + message;
-    actions.innerHTML = `<button onclick="location.reload()">Restart</button>`;
-  }
-
-  // Game won
-  win(message) {
-    this.isGameOver = true;
-    const desc = document.getElementById("description");
-    const actions = document.getElementById("actions");
-    desc.textContent = "🏆 " + message;
-    actions.innerHTML = `<button onclick="location.reload()">Play Again</button>`;
-  }
-
-  updateUI() {
-    if (this.isGameOver) return;
-
-    const desc = document.getElementById("description");
-    const actions = document.getElementById("actions");
-
-    desc.textContent = this.currentRoom.describe();
-    actions.innerHTML = "";
-
-    // Movement buttons
-    for (let dir in this.currentRoom.connections) {
-      const btn = document.createElement("button");
-      btn.textContent = "Go " + dir;
-      btn.onclick = () => this.move(dir);
-      actions.appendChild(btn);
+        this.checkLoseCondition();
+        this.checkWinCondition();
+        this.update();
     }
 
-    // Item buttons
-    this.currentRoom.items.forEach(item => {
-      const btn = document.createElement("button");
-      btn.textContent = "Pick up " + item.name;
-      btn.onclick = () => this.pickUp(item);
-      actions.appendChild(btn);
-    });
+    pickUp(itemName) {
+        const item = this.currentRoom.items.find(i => i.name === itemName);
+        if (!item) {
+            this.showMessage("That item is not here.");
+            return;
+        }
 
-    // Inventory button
-    const invBtn = document.createElement("button");
-    invBtn.textContent = "Check Inventory";
-    invBtn.onclick = () => this.showMessage(this.player.listInventory());
-    actions.appendChild(invBtn);
-  }
+        this.player.addItem(item);
+        this.currentRoom.items = this.currentRoom.items.filter(i => i.name !== itemName);
+        this.showMessage(`You picked up: ${itemName}`);
+
+        this.checkWinCondition();
+        this.update();
+    }
+
+    checkWinCondition() {
+        const needed = ["Engine Part", "Fuel Cell", "Control Chip"];
+        const hasAllParts = needed.every(part => this.player.hasItem(part));
+
+        if (hasAllParts && this.currentRoom.name === "Crash Site") {
+            this.showMessage("You repaired your ship and escaped to your home planet. YOU WIN!");
+            this.isGameOver = true;
+        }
+    }
+
+    checkLoseCondition() {
+        const needed = ["Engine Part", "Fuel Cell", "Control Chip"];
+        const missing = needed.filter(part => !this.player.hasItem(part));
+
+        if (this.currentRoom.name === "Secret Lab" && missing.length > 0) {
+            this.showMessage("The humans captured you before your ship was fixed. YOU LOSE!");
+            this.isGameOver = true;
+        }
+    }
+
+    update() {
+        if (this.isGameOver) return;
+
+        let text = `<strong>Location:</strong> ${this.currentRoom.name}<br>`;
+        text += `${this.currentRoom.description}<br><br>`;
+
+        if (this.currentRoom.items.length > 0) {
+            text += `<strong>Items here:</strong> ${this.currentRoom.items.map(i => i.name).join(", ")}<br>`;
+        }
+
+        text += `<strong>➡ Paths:</strong> ${Object.keys(this.currentRoom.connections).join(", ")}<br>`;
+        text += `<strong>Inventory:</strong> ${this.player.inventory.map(i => i.name).join(", ") || "Empty"}`;
+
+        document.getElementById("gameText").innerHTML = text;
+    }
+
+    showMessage(msg) {
+        document.getElementById("gameText").innerHTML += `<br><br><em>${msg}</em>`;
+    }
 }
 
-// ---------- Start Game ----------
+class Room {
+    constructor(name, description) {
+        this.name = name;
+        this.description = description;
+        this.connections = {};
+        this.items = [];
+    }
+    connect(direction, room) {
+        this.connections[direction] = room;
+    }
+}
+
+class Player {
+    constructor() {
+        this.inventory = [];
+        this.location = null;
+    }
+    addItem(item) {
+        this.inventory.push(item);
+    }
+    hasItem(name) {
+        return this.inventory.some(item => item.name === name);
+    }
+}
+
+class Item {
+    constructor(name, description) {
+        this.name = name;
+        this.description = description;
+    }
+}
+
 const game = new Game();
-game.start();
+window.onload = () => game.start();
