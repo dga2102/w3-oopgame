@@ -1,3 +1,4 @@
+
 class Game {
     constructor() {
         this.rooms = {};
