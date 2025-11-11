@@ -1,26 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Escape From Earth!</title>
+  <title>Escape from Earth!</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0a0f1f;
+      color: #d4f7ff;
+      text-align: center;
+      padding: 20px;
+    }
+    #game {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px cyan;
+      display: inline-block;
+      width: 90%;
+      max-width: 600px;
+    }
+    button {
+      background: cyan;
+      border: none;
+      padding: 10px 16px;
+      margin: 6px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #00bebe;
+      transform: scale(1.1);
+    }
+    h1 {
+      text-shadow: 0 0 10px cyan;
+    }
+    #description {
+      white-space: pre-line;
+      margin: 20px 0;
+      font-size: 18px;
+      min-height: 60px;
+    }
+  </style>
 </head>
+
 <body>
 
-    <h1>Escape From Earth!</h1>
+  <h1>Escape From Earth!</h1>
 
-    <p id="gameText"></p>
+  <!-- NAME INPUT -->
+  <div id="intro">
+    <p>Enter your alien name:</p>
+    <input id="playerName" placeholder= />
+    <button onclick="startGame()">Start</button>
+  </div>
 
-    <button onclick="game.move('north')">Go North</button>
-    <button onclick="game.move('south')">Go South</button>
-    <button onclick="game.move('east')">Go East</button>
-    <button onclick="game.move('west')">Go West</button>
+  <!-- GAME UI (hidden at start) -->
+  <div id="game" style="display:none;">
+    <div id="description"></div>
+    <div id="actions"></div>
+  </div>
 
-    <br><br>
+  <script src="game.js"></script>
+  <script>
+    function startGame() {
+      const name = document.getElementById("playerName").value.trim();
+      if (!name) return alert("You need a name, pal!");
 
-    <button onclick="game.pickUp('Engine Part')">Pick up Engine Part</button>
-    <button onclick="game.pickUp('Fuel Cell')">Pick up Fuel Cell</button>
-    <button onclick="game.pickUp('Control Chip')">Pick up Control Chip</button>
+      document.getElementById("intro").style.display = "none";
+      document.getElementById("game").style.display = "block";
 
-    <script src="game.js"></script>
+      // Optional: greet player in game text
+      document.getElementById("description").textContent = `Welcome, ${name}... your ship needs repairs.`;
+      
+      game.start();
+    }
+  </script>
 
 </body>
 </html>

@@ -62,7 +62,7 @@ class Game {
 
   start() {
     //Create Rooms
-    const crashSite = new Room("Crash Site", "Your ship lies wrecked here. Smoke rises from the wreckage.");
+    const crashSite = new Room("Crash Site", "You have crashed your ship! You must navigate yourself round planet earth to collect the necessary parts to fix your ship and get back to your home planet.");
     const forest = new Room("Forest", "Tall trees surround you. You hear strange noises.");
     const cave = new Room("Cave", "It's dark and cold inside the cave.");
     const river = new Room("River", "A wide river glows under the moonlight. You can see human lights in the distance.");
