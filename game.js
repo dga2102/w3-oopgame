@@ -135,7 +135,7 @@ class Game {
 
   win(message) {
     this.isGameOver = true;
-    document.getElementById("description").textContent = "Congratulations" + message;
+    document.getElementById("description").textContent = "Congratulations " + message;
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-blue-700 p-2 rounded">Play Again</button>`;
   }
