@@ -56,10 +56,10 @@ class Game {
 
   start() {
     const crashSite = new Room("Crash Site", "Your alien spaceship has crashlanded on Earth! Find the unusual necessary parts to fix your ship and return to your home planet!");
-    const mcdonalds = new Room("McDonalds", "Full of humans, act natural.");
-    const cave = new Room("Cave", "Dark, damp… something beeps faintly.");
-    const river = new Room("River", "A glowing river with shiny wreckage nearby.");
-    const lab = new Room("Laboratory", "Top secret human tech. They must not see you.");
+    const mcdonalds = new Room("McDonalds", "Full of humans, this must be their base of operations. Act natural, move fast!");
+    const cave = new Room("Football Stadium", "Ah, this must be where the humans come to watch eachother battle, just like home!");
+    const river = new Room("Big Ben - Westminster", "What an odd looking rocket. This'll do!");
+    const lab = new Room("Centre for Disease Control", "Top secret human tech, yet still so primitive. Nothing I can use here.");
 
     crashSite.connect("North",mcdonalds);
     crashSite.connect("East", river);
@@ -71,8 +71,8 @@ class Game {
     lab.connect("South", river);
 
     const enginePart = new Item("Milkshake machine motor");
-    const controlChip = new Item("Control Chip", "Main brain of the ship.");
-    const fuelCell = new Item("Fuel Cell", "Glowing energy container.");
+    const controlChip = new Item("Goal post netting");
+    const fuelCell = new Item("Big Bens little hand");
 
     mcdonalds.items.push(enginePart);
     cave.items.push(controlChip);
@@ -128,7 +128,7 @@ class Game {
 
   lose(message) {
     this.isGameOver = true;
-    document.getElementById("description").textContent = "Nice Try!" + message;
+    document.getElementById("description").textContent = "Nice Try! " + message;
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-red-700 p-2 rounded">Restart</button>`;
   }
