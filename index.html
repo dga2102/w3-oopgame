@@ -7,25 +7,24 @@
     <title>Escape from Earth!</title>
 </head>
 
-<body class="bg-gradient-to-br from-black via-[#0a1b17] to-[#0f4236] text-green-400 min-h-screen font-mono">
+<body class="bg-gradient-to-br from-black via-[#0a1b17] to-[#0f4236] text-green-400 min-h-screen font-mono overflow-y-auto flex justify-center items-start pt-6">
 
-  <!-- Full-height flex container to center the game -->
-  <div class="min-h-screen flex items-center justify-center">
+  <div class="scale-[ origin-top">
+    <div class="bg-gradient-to-br from-[#0d1c18] via-[#0c2b22] to-[#0f4d34] border border-green-600 p-6 rounded-xl w-96 shadow-2xl">
 
-    <div class="bg-gradient-to-br from-[#0d1c18] via-[#0c2b22] to-[#0f4d34] border border-green-600 p-8 rounded-2xl w-[28rem] shadow-2xl text-lg">
-
-      <h2 id="room-name" class="text-3xl font-bold text-green-300 mb-4"></h2>
+      <h2 id="room-name" class="text-2xl font-bold text-green-300 mb-2"></h2>
 
       <p id="description" class="min-h-[80px] mb-4"></p>
-      <p id="exits" class="text-green-300 font-bold mb-4"></p>
+      <p id="exits" class="text-green-300 font-bold mb-3"></p>
 
-      <div id="actions" class="flex flex-col gap-3"></div>
+      <div id="actions" class="flex flex-col gap-2"></div>
 
     </div>
-
   </div>
 
   <script src="game.js"></script>
+
+  <audio id="bg-music" src="Chill Music for the Sci-fi Future.mp3" loop></audio>
 
 </body>
 </html>
