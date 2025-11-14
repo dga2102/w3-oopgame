@@ -5,11 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Escape from Earth!</title>
+
+    <style>
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    .blink {
+      animation: blink 0.8s step-end infinite;
+    }
+    </style>
 </head>
 
 <body class="bg-gradient-to-br from-black via-[#0a1b17] to-[#0f4236] text-green-400 min-h-screen font-mono overflow-y-auto flex justify-center items-start pt-6">
 
-  <div class="scale-[ origin-top">
+  <!-- START MENU -->
+  <div id="start-menu" class="flex flex-col items-center text-center w-full mt-10">
+      <h1 class="text-4xl font-bold text-green-300 mb-2 tracking-wider">ESCAPE FROM EARTH</h1>
+      <p class="text-green-400 mb-6 text-lg">Press START to begin<span class='blink'>_</span></p>
+      <button onclick="startGame()" class="bg-green-700 hover:bg-green-600 px-6 py-3 rounded text-black font-bold text-lg">START GAME</button>
+  </div>
+
+  <!-- GAME CONTAINER (HIDDEN UNTIL START) -->
+  <div id="game-container" class="hidden w-full flex justify-center mt-6">
+
+  <div class="scale-[1.05] origin-top">
     <div class="bg-gradient-to-br from-[#0d1c18] via-[#0c2b22] to-[#0f4d34] border border-green-600 p-6 rounded-xl w-96 shadow-2xl">
 
       <h2 id="room-name" class="text-2xl font-bold text-green-300 mb-2"></h2>
