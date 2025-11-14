@@ -149,7 +149,7 @@ class Game {
 
   checkWinCondition() {
     if (this.currentRoom.name === "Crash Site" && this.hasAllParts()) {
-      this.win("You rebuilt your ship and escaped Earth!");
+      this.win("Congratulations! You rebuilt your ship and escaped Earth!");
     }
   }
 
@@ -160,18 +160,14 @@ class Game {
     document.getElementById("exits").innerHTML = "";
   }
 
-  // UPDATED LOSE() — forces CDC header immediately
   lose(message) {
     this.isGameOver = true;
     clearInterval(this.timerInterval);
 
-    // Update header instantly
     document.getElementById("room-name").textContent = "Centre for Disease Control";
 
-    // Show lose text
     document.getElementById("description").textContent = "Nice Try! " + message;
 
-    // Restart button
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-red-700 p-2 rounded">Restart</button>`;
 
@@ -179,13 +175,18 @@ class Game {
   }
 
   win(message) {
-    this.isGameOver = true;
-    clearInterval(this.timerInterval);
-    document.getElementById("description").textContent = "Congratulations! " + message;
-    document.getElementById("actions").innerHTML =
-      `<button onclick="location.reload()" class="bg-blue-700 p-2 rounded">Play Again</button>`;
-    document.getElementById("exits").innerHTML = "";
-  }
+  this.isGameOver = true;
+  clearInterval(this.timerInterval);
+
+  document.getElementById("room-name").textContent = "Crash Site";
+
+  document.getElementById("description").textContent = message;
+
+  document.getElementById("actions").innerHTML =
+    `<button onclick="location.reload()" class="bg-blue-700 p-2 rounded">Play Again</button>`;
+
+  document.getElementById("exits").innerHTML = "";
+}
 
   updateTimer() {
     if (this.isGameOver || !this.timerElement) return;
