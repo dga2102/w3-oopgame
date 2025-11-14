@@ -1,4 +1,4 @@
-// Background music starter
+// Background music
 function setupMusic() {
   document.addEventListener("click", () => {
     const bg = document.getElementById("bg-music");
@@ -116,6 +116,12 @@ class Game {
       return;
     }
 
+    // Flash red warning when entering CDC
+    if (nextRoom.name === "Centre for Disease Control") {
+      document.body.classList.add('flash-red');
+      setTimeout(() => document.body.classList.remove('flash-red'), 300);
+    }
+
     if (nextRoom.name === "Centre for Disease Control" && !this.hasAllParts()) {
       this.lose("Humans captured you before you could repair your ship!");
       return;
@@ -154,12 +160,21 @@ class Game {
     document.getElementById("exits").innerHTML = "";
   }
 
+  // UPDATED LOSE() — forces CDC header immediately
   lose(message) {
     this.isGameOver = true;
     clearInterval(this.timerInterval);
+
+    // Update header instantly
+    document.getElementById("room-name").textContent = "Centre for Disease Control";
+
+    // Show lose text
     document.getElementById("description").textContent = "Nice Try! " + message;
+
+    // Restart button
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-red-700 p-2 rounded">Restart</button>`;
+
     document.getElementById("exits").innerHTML = "";
   }
 
@@ -226,7 +241,7 @@ class Game {
   }
 }
 
-// START BUTTON LOGIC (2-screen system)
+// START BUTTON LOGIC
 function startGame() {
   document.getElementById("start-menu").classList.add("hidden");
   document.getElementById("game-container").classList.remove("hidden");
