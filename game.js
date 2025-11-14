@@ -1,4 +1,17 @@
-class Item {
+// Background music starter
+function setupMusic() {
+  document.addEventListener("click", () => {
+    const bg = document.getElementById("bg-music");
+    if (bg && bg.paused) {
+      bg.volume = 0.5;
+      bg.play();
+    }
+  }, { once: true });
+}
+
+setupMusic();
+
+  class Item {
   constructor(name, description) {
     this.name = name;
     this.description = description;
@@ -57,14 +70,22 @@ class Game {
     this.player = new Player();
     this.isGameOver = false;
 
-    // Stopwatch setup
+    // Stopwatch
     this.startTime = Date.now();
     this.timerInterval = setInterval(() => this.updateTimer(), 1000);
     this.timerElement = null;
   }
 
   start() {
-    const crashSite = new Room("Crash Site", "Your alien spaceship has crashlanded on Earth! Find the unusual necessary parts to fix your ship and return to your home planet!");
+
+    // 🎵 PLAY START SOUND
+    const sfx = document.getElementById("start-sound");
+    if (sfx) {
+      sfx.volume = 1.0;
+      sfx.play().catch(() => {});
+    }
+
+    const crashSite = new Room("Crash Site", "Your alien spaceship has crash landed on Earth! Find the unusual necessary parts to fix your ship and return to your home planet!");
     const mcdonalds = new Room("McDonalds", "Full of humans, this must be their base of operations. Act natural, move fast!");
     const cave = new Room("Football Stadium", "Ah, this must be where the humans come to watch eachother battle, just like home!");
     const river = new Room("Big Ben - Westminster", "What an odd looking rocket. This'll do!");
@@ -166,12 +187,11 @@ class Game {
   }
 
   updateUI() {
-    // Insert timer INSIDE the scaled box
+    // Insert timer inside the scaled panel
     if (!this.timerElement) {
       this.timerElement = document.createElement("p");
       this.timerElement.className = "text-green-300 font-bold mb-2";
 
-      // FIX: insert into the inner scaled panel
       const container = document.querySelector('.border.border-green-600');
       container.insertBefore(this.timerElement, container.firstChild.nextSibling);
     }
