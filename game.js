@@ -18,12 +18,16 @@ class Room {
   }
 
   describe() {
-    let text = `${this.description}\n`;
+    let text = `${this.description}
+`;
     if (this.items.length > 0) {
-      text += `You see: ${this.items.map(i => i.name).join(", ")}.\n`;
+      text += `<span class='font-bold block mt-3'>You see:</span> ${this.items.map(i => i.name).join(", ")}.`;
     }
-    text += `Exits: ${Object.keys(this.connections).join(", ")}.`;
     return text;
+  }
+
+  listExits() {
+    return Object.keys(this.connections);
   }
 }
 
@@ -53,10 +57,10 @@ class Game {
     this.player = new Player();
     this.isGameOver = false;
 
-    // ⏱️ Stopwatch
+    // Stopwatch setup
     this.startTime = Date.now();
-    this.timerElement = null;
     this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+    this.timerElement = null;
   }
 
   start() {
@@ -66,11 +70,11 @@ class Game {
     const river = new Room("Big Ben - Westminster", "What an odd looking rocket. This'll do!");
     const lab = new Room("Centre for Disease Control", "Top secret human tech, yet still so primitive. Nothing I can use here.");
 
-    crashSite.connect("North",mcdonalds);
+    crashSite.connect("North", mcdonalds);
     crashSite.connect("East", river);
     mcdonalds.connect("South", crashSite);
     mcdonalds.connect("East", cave);
-    cave.connect("West",mcdonalds);
+    cave.connect("West", mcdonalds);
     river.connect("West", crashSite);
     river.connect("North", lab);
     lab.connect("South", river);
@@ -95,7 +99,7 @@ class Game {
       return;
     }
 
-    if (nextRoom.name === "Laboratory" && !this.hasAllParts()) {
+    if (nextRoom.name === "Centre for Disease Control" && !this.hasAllParts()) {
       this.lose("Humans captured you before you could repair your ship!");
       return;
     }
@@ -108,7 +112,7 @@ class Game {
   pickUp(item) {
     this.player.addItem(item);
     this.currentRoom.items = this.currentRoom.items.filter(i => i !== item);
-    this.showMessage(`You picked up the ${item.name}.`);
+    this.showMessage(`<span class='font-bold block mt-3'>You picked up the ${item.name}.</span>`);
     this.checkWinCondition();
   }
 
@@ -127,9 +131,10 @@ class Game {
   }
 
   showMessage(msg) {
-    document.getElementById("description").textContent = msg;
+    document.getElementById("description").innerHTML = msg;
     document.getElementById("actions").innerHTML =
       `<button onclick="game.updateUI()" class="bg-green-700 p-2 rounded">Continue</button>`;
+    document.getElementById("exits").innerHTML = "";
   }
 
   lose(message) {
@@ -138,17 +143,18 @@ class Game {
     document.getElementById("description").textContent = "Nice Try! " + message;
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-red-700 p-2 rounded">Restart</button>`;
+    document.getElementById("exits").innerHTML = "";
   }
 
   win(message) {
     this.isGameOver = true;
     clearInterval(this.timerInterval);
-    document.getElementById("description").textContent = "Congratulations " + message;
+    document.getElementById("description").textContent = "Congratulations! " + message;
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-blue-700 p-2 rounded">Play Again</button>`;
+    document.getElementById("exits").innerHTML = "";
   }
 
-  // ⏱️ Stopwatch update function
   updateTimer() {
     if (this.isGameOver || !this.timerElement) return;
 
@@ -160,18 +166,24 @@ class Game {
   }
 
   updateUI() {
-    // Create timer display once
+    // Insert timer INSIDE the scaled box
     if (!this.timerElement) {
       this.timerElement = document.createElement("p");
       this.timerElement.className = "text-green-300 font-bold mb-2";
-      const container = document.querySelector('.bg-gray-900');
+
+      // FIX: insert into the inner scaled panel
+      const container = document.querySelector('.border.border-green-600');
       container.insertBefore(this.timerElement, container.firstChild.nextSibling);
     }
 
     if (this.isGameOver) return;
 
     document.getElementById("room-name").textContent = this.currentRoom.name;
-    document.getElementById("description").textContent = this.currentRoom.describe();
+    document.getElementById("description").innerHTML = this.currentRoom.describe();
+
+    const exits = this.currentRoom.listExits();
+    document.getElementById("exits").innerHTML =
+      `<strong class='text-green-300'>Exits:</strong> ${exits.map(e => `<span class='font-bold text-green-400'>${e}</span>`).join(", ")}`;
 
     const actions = document.getElementById("actions");
     actions.innerHTML = "";
