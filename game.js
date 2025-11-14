@@ -108,9 +108,9 @@ class Game {
 
   hasAllParts() {
     return (
-      this.player.hasItem("Engine Part") &&
-      this.player.hasItem("Control Chip") &&
-      this.player.hasItem("Fuel Cell")
+      this.player.hasItem("Milkshake machine motor") &&
+      this.player.hasItem("Goal post netting") &&
+      this.player.hasItem("Big Bens little hand")
     );
   }
 
