@@ -11,7 +11,7 @@ function setupMusic() {
 
 setupMusic();
 
-  class Item {
+class Item {
   constructor(name, description) {
     this.name = name;
     this.description = description;
@@ -31,8 +31,7 @@ class Room {
   }
 
   describe() {
-    let text = `${this.description}
-`;
+    let text = `${this.description}\n`;
     if (this.items.length > 0) {
       text += `<span class='font-bold block mt-3'>You see:</span> ${this.items.map(i => i.name).join(", ")}.`;
     }
@@ -70,15 +69,12 @@ class Game {
     this.player = new Player();
     this.isGameOver = false;
 
-    // Stopwatch
     this.startTime = Date.now();
     this.timerInterval = setInterval(() => this.updateTimer(), 1000);
     this.timerElement = null;
   }
 
   start() {
-
-    // 🎵 PLAY START SOUND
     const sfx = document.getElementById("start-sound");
     if (sfx) {
       sfx.volume = 1.0;
@@ -187,11 +183,9 @@ class Game {
   }
 
   updateUI() {
-    // Insert timer inside the scaled panel
     if (!this.timerElement) {
       this.timerElement = document.createElement("p");
       this.timerElement.className = "text-green-300 font-bold mb-2";
-
       const container = document.querySelector('.border.border-green-600');
       container.insertBefore(this.timerElement, container.firstChild.nextSibling);
     }
@@ -232,5 +226,18 @@ class Game {
   }
 }
 
+// START BUTTON LOGIC (2-screen system)
+function startGame() {
+  document.getElementById("start-menu").classList.add("hidden");
+  document.getElementById("game-container").classList.remove("hidden");
+
+  const bg = document.getElementById("bg-music");
+  if (bg) {
+    bg.volume = 0.5;
+    bg.play().catch(() => {});
+  }
+
+  game.start();
+}
+
 const game = new Game();
-game.start();
