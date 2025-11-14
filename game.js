@@ -52,6 +52,11 @@ class Game {
     this.currentRoom = null;
     this.player = new Player();
     this.isGameOver = false;
+
+    // ⏱️ Stopwatch
+    this.startTime = Date.now();
+    this.timerElement = null;
+    this.timerInterval = setInterval(() => this.updateTimer(), 1000);
   }
 
   start() {
@@ -104,6 +109,7 @@ class Game {
     this.player.addItem(item);
     this.currentRoom.items = this.currentRoom.items.filter(i => i !== item);
     this.showMessage(`You picked up the ${item.name}.`);
+    this.checkWinCondition();
   }
 
   hasAllParts() {
@@ -128,6 +134,7 @@ class Game {
 
   lose(message) {
     this.isGameOver = true;
+    clearInterval(this.timerInterval);
     document.getElementById("description").textContent = "Nice Try! " + message;
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-red-700 p-2 rounded">Restart</button>`;
@@ -135,12 +142,32 @@ class Game {
 
   win(message) {
     this.isGameOver = true;
+    clearInterval(this.timerInterval);
     document.getElementById("description").textContent = "Congratulations " + message;
     document.getElementById("actions").innerHTML =
       `<button onclick="location.reload()" class="bg-blue-700 p-2 rounded">Play Again</button>`;
   }
 
+  // ⏱️ Stopwatch update function
+  updateTimer() {
+    if (this.isGameOver || !this.timerElement) return;
+
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const mins = String(Math.floor(elapsed / 60)).padStart(2, "0");
+    const secs = String(elapsed % 60).padStart(2, "0");
+
+    this.timerElement.textContent = `Time: ${mins}:${secs}`;
+  }
+
   updateUI() {
+    // Create timer display once
+    if (!this.timerElement) {
+      this.timerElement = document.createElement("p");
+      this.timerElement.className = "text-green-300 font-bold mb-2";
+      const container = document.querySelector('.bg-gray-900');
+      container.insertBefore(this.timerElement, container.firstChild.nextSibling);
+    }
+
     if (this.isGameOver) return;
 
     document.getElementById("room-name").textContent = this.currentRoom.name;
